@@ -1,5 +1,9 @@
+using System.Net;
 using App.Services;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Razor;
+using Microsoft.AspNetCore.Routing.Constraints;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,6 +12,7 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 
 builder.Services.AddSingleton<ProductService>();
+builder.Services.AddSingleton<PlanetService>();
 
 // thiet lap duong dan thay the khi tim trong /Views/Controllers/action khong thay
 builder.Services.Configure<RazorViewEngineOptions>(option =>
@@ -39,9 +44,74 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.UseStatusCodePages();
+
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+
+
+#pragma warning disable ASP0014 // Suggest using top level route registrations
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapGet("/sayhi", async (context) =>
+    {
+        await context.Response.WriteAsync("hello world");
+    });
+
+    // endpoints.MapControllers
+    // endpoints.MapControllerRoute
+    // endpoints.MapDefaultControllerRoute
+    // endpoints.MapAreaControllerRoute
+
+    // [AcceptVerbs]
+    // [Route]
+    // [HttpGet]
+    // [HttpPost]
+    // [HttpPut]
+    // [HttpDelete]
+    // [HttpHead]
+    // [HttpPatch]
+
+    endpoints.MapControllers();
+
+
+
+    // endpoints.MapControllerRoute(
+    //     name: "first",
+    //     pattern: "{url:regex(^((xemsanpham)|(viewproduct)$)}/{id:range(2,4)}",
+    //     defaults: new
+    //     {
+    //         controller = "First",
+    //         action = "ViewProduct"
+    //     }
+    //     // constraints: new {
+    //     //     // url = new RegexRouteConstraint(@"^((xemsanpham)|(viewproduct)$"),
+    //     //     // id = new RangeRouteConstraint(1,3)
+    //     // }
+
+    // );
+
+    endpoints.MapAreaControllerRoute(
+        name: "products",
+        areaName: "ProductManage",
+        pattern: "{controller}/{action=Index}/{id?}"
+
+    );
+
+
+
+
+    endpoints.MapControllerRoute(
+        name: "default",
+        pattern: "{controller=Home}/{action=Index}/{id?}"
+
+    );
+
+    endpoints.MapRazorPages();
+});
+#pragma warning restore ASP0014 // Suggest using top level route registrations
 
 app.MapRazorPages();
 
