@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace App.Controllers;
 
-// [Area("ProductManager")]
+[Area("ProductManage")]
 public class ProductController : Controller
 {
     private readonly ProductService _productService;
